@@ -1,6 +1,9 @@
 {
     "sites": [],
     "parses": [],
-    "lives": [],
+    "lives": [{
+      "name": "我的直播",
+      "url": "https://raw.githubusercontent.com/zz0117/my-tvbox/main/live/live.txt"
+    }],
     "flags": []
 }
