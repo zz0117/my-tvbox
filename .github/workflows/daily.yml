@@ -1,26 +1,56 @@
-name: 每日自动任务
+name: Update Live Source
 
 on:
   schedule:
-    - cron: "0 0 * * *"    # 北京时间 08:00
-    - cron: "0 12 * * *"   # 北京时间 20:00
+    # 北京时间:
+    # 06:00 08:00 10:00 12:00 14:00 16:00 18:00 20:00 22:00
+    #
+    # 对应 UTC:
+    # 22:00 00:00 02:00 04:00 06:00 08:00 10:00 12:00 14:00
+
+    - cron: "0 0,2,4,6,8,10,12,14,22 * * *"
+
   workflow_dispatch:
 
+
 jobs:
-  daily_job:
+
+  update-live:
+
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
 
-      - name: Setup Python
-        uses: actions/setup-python@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+
+
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v5
         with:
-          python-version: "3.10"
+          python-version: "3.11"
+
 
       - name: Install dependencies
-        run: pip install requests
+        run: |
+          pip install requests
 
-      - name: Run main program
-        run: python main.py
+
+      - name: Run update
+        run: |
+          python main.py
+
+
+      - name: Commit live.txt
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+          git add live/live.txt
+
+          git diff --cached --quiet || git commit -m "auto update live"
+
+
+      - name: Push
+        run: |
+          git push
